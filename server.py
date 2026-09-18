@@ -25,7 +25,7 @@ import google.generativeai as genai
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 # Use gemini-1.5-flash (free tier, fast)
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-2.0-flash"
 
 # ── MongoDB (optional fallback to in-memory) ──────────────────
 MONGO_URI = os.getenv("MONGO_URI", "")
