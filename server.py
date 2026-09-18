@@ -19,15 +19,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── OpenAI client (v1+) ───────────────────────────────────────
-from openai import OpenAI
-openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# ── Gemini client ─────────────────────────────────────────────
+import google.generativeai as genai
 
-# ── MongoDB (optional fallback to in-memory) ─────────────────
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
+# Use gemini-1.5-flash (free tier, fast)
+GEMINI_MODEL = "gemini-1.5-flash"
+
+# ── MongoDB (optional fallback to in-memory) ──────────────────
 MONGO_URI = os.getenv("MONGO_URI", "")
 db_mode = "memory"
 conversations_col = None
-in_memory_store = {}   # fallback: { id: {title, messages, tone, created_at, updated_at} }
+in_memory_store = {}
 
 if MONGO_URI and "placeholder" not in MONGO_URI:
     try:
@@ -41,7 +45,7 @@ if MONGO_URI and "placeholder" not in MONGO_URI:
     except Exception as e:
         print(f"[WARN] MongoDB unavailable ({e}), using in-memory store")
 else:
-    print("[WARN] No valid MONGO_URI - using in-memory store (history won't persist across restarts)")
+    print("[WARN] No valid MONGO_URI - using in-memory store")
 
 # ── Tone instructions ─────────────────────────────────────────
 TONE_INSTRUCTIONS = {
@@ -158,30 +162,32 @@ def get_conversation(conv_id: str):
 def chat(req: ChatRequest):
     tone_instruction = TONE_INSTRUCTIONS.get(req.tone.lower(), TONE_INSTRUCTIONS["professional"])
 
-    messages_for_api = [{"role": "system", "content": tone_instruction}]
+    # Build Gemini chat history
+    gemini_history = []
     for m in (req.history or []):
-        messages_for_api.append({"role": m.role, "content": m.content})
-    messages_for_api.append({"role": "user", "content": req.message})
+        role = "user" if m.role == "user" else "model"
+        gemini_history.append({"role": role, "parts": [m.content]})
 
     def stream_generator():
         full_response = ""
         try:
-            stream = openai_client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=messages_for_api,
-                stream=True,
-                max_tokens=1024,
+            model = genai.GenerativeModel(
+                model_name=GEMINI_MODEL,
+                system_instruction=tone_instruction,
             )
-            for chunk in stream:
-                delta = chunk.choices[0].delta.content
+            chat_session = model.start_chat(history=gemini_history)
+            response = chat_session.send_message(req.message, stream=True)
+
+            for chunk in response:
+                delta = chunk.text
                 if delta:
                     full_response += delta
                     yield f"data: {json.dumps({'delta': delta})}\n\n"
 
             # Persist to DB
             now_iso = datetime.now(timezone.utc).isoformat()
-            user_msg = {"role": "user",      "content": req.message,    "timestamp": now_iso}
-            ai_msg   = {"role": "assistant", "content": full_response,  "timestamp": now_iso}
+            user_msg = {"role": "user",      "content": req.message,   "timestamp": now_iso}
+            ai_msg   = {"role": "assistant", "content": full_response, "timestamp": now_iso}
 
             conv_id = req.conversation_id
             if conv_id and db_get_conversation(conv_id):
@@ -205,5 +211,5 @@ def chat(req: ChatRequest):
     return StreamingResponse(stream_generator(), media_type="text/event-stream")
 
 
-# Serve static files last
+# Serve static files
 app.mount("/static", StaticFiles(directory="public"), name="static")
