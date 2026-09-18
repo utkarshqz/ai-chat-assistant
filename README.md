@@ -8,7 +8,7 @@
 
 > Add screenshots of your running app here.
 
-![AI Chat Assistant](./screenshot.png)
+![AI Chat Assistant](./screenshot.png.png)
 
 <!-- To add your own screenshot:
   1. Press Win+Shift+S to take a screenshot
