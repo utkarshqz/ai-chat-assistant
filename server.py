@@ -36,7 +36,12 @@ in_memory_store = {}
 if MONGO_URI and "placeholder" not in MONGO_URI:
     try:
         from pymongo import MongoClient
-        mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
+        mongo_client = MongoClient(
+            MONGO_URI,
+            serverSelectionTimeoutMS=5000,
+            tls=True,
+            tlsAllowInvalidCertificates=True,
+        )
         mongo_client.admin.command("ping")
         db = mongo_client["ai_chat"]
         conversations_col = db["conversations"]

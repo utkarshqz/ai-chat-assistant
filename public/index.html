@@ -11,24 +11,24 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d0f14;
-      --sidebar-bg: #11141b;
-      --card: #181c26;
-      --card2: #1e2333;
-      --border: #2a2f42;
-      --accent: #6c63ff;
-      --accent2: #a78bfa;
-      --accent-glow: rgba(108, 99, 255, 0.25);
-      --user-bubble: linear-gradient(135deg, #6c63ff, #a78bfa);
-      --ai-bubble: #1e2333;
-      --text: #e8eaf6;
-      --text-muted: #8892b0;
-      --text-dim: #4a5568;
-      --success: #48bb78;
-      --danger: #fc8181;
-      --professional: #60a5fa;
-      --casual: #f9a8d4;
-      --concise: #6ee7b7;
+      --bg: #f4f6fb;
+      --sidebar-bg: #ffffff;
+      --card: #f0f2f8;
+      --card2: #e8ecf4;
+      --border: #d1d9e8;
+      --accent: #2563eb;
+      --accent2: #4f46e5;
+      --accent-glow: rgba(37, 99, 235, 0.15);
+      --user-bubble: linear-gradient(135deg, #2563eb, #4f46e5);
+      --ai-bubble: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --professional: #2563eb;
+      --casual: #db2777;
+      --concise: #059669;
       --sidebar-width: 280px;
       --header-h: 64px;
       --radius: 16px;
@@ -72,7 +72,7 @@
       box-shadow: 0 4px 14px var(--accent-glow);
     }
 
-    .logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
     .logo-sub  { font-size: 10px; color: var(--text-muted); font-weight: 400; letter-spacing: 0.5px; text-transform: uppercase; }
 
     .new-chat-btn {
@@ -441,7 +441,7 @@
         <div class="logo-icon">🤖</div>
         <div>
           <div class="logo-text">AI Assistant</div>
-          <div class="logo-sub">Powered by GPT-4o</div>
+          <div class="logo-sub">Intelligent Chat</div>
         </div>
       </div>
       <button class="new-chat-btn" id="new-chat-btn" onclick="startNewChat()">
