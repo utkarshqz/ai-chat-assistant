@@ -4,6 +4,18 @@
 
 ---
 
+## 📸 Screenshots
+
+> Add screenshots of your running app here.
+
+![AI Chat Assistant](./screenshot.png)
+
+<!-- To add your own screenshot:
+  1. Press Win+Shift+S to take a screenshot
+  2. Save it as screenshot.png in the project root
+  3. git add screenshot.png && git commit -m "docs: add screenshot" && git push
+-->
+
 ## 🚀 Live Demo
 
 Run locally at `http://localhost:8000` after setup.
